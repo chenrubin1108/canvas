@@ -30,6 +30,12 @@
     <!--  -->
     <canvas id="canvas"></canvas>
     <script>
+    // 阻止回弹效果
+    document.body.addEventListener('touchmove', function (e) {
+    e.preventDefault(); //阻止默认的处理方式(阻止下拉滑动的效果)
+}, {passive: false}); 
+      // // 禁用滚动条
+      // document.body.parentNode.style.overflow = 'hidden';
       // 怎么让点连成线,看起来不那么断断续续的呢
       // 如何变成同样的宽高的。
       let canvas = document.getElementById("canvas");
