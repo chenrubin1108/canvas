@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0,user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="author" content="陈如斌" />
+    <title></title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      .canvas {
+        display: block;
+        border: 1px solid red;
+      }
+      h1 {
+        position: absolute;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>来试试涂鸦</h1>
+    <!--  -->
+    <canvas id="canvas"></canvas>
+    <script>
+      // 阻止回弹效果
+      document.body.addEventListener(
+        "touchmove",
+        function (e) {
+          e.preventDefault(); //阻止默认的处理方式(阻止下拉滑动的效果)
+        },
+        { passive: false }
+      );
+      // // 禁用滚动条
+      // document.body.parentNode.style.overflow = 'hidden';
+      // 怎么让点连成线,看起来不那么断断续续的呢
+      // 如何变成同样的宽高的。
+      let canvas = document.getElementById("canvas");
+      canvas.width = document.documentElement.clientWidth;
+      canvas.height = document.documentElement.clientHeight;
+      // 检测手机是否可以使用
+      var isTouchDevice = "ontouchstart" in document.documentElement;
+      var ctx = canvas.getContext("2d");
+      let isDrawing = false;
+      ctx.strokeStyle = "none";
+      ctx.fillStyle = "black";
+      ctx.lineWidth = 8;
+      ctx.lineCap = "round";
+      // drawLine(0, 0, 300, 300);
+      // drawLine(300, 300, 400, 200);
+      console.log(isTouchDevice);
+      function drawLine(x1, y1, x2, y2) {
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+      }
+      if (isTouchDevice) {
+        canvas.addEventListener("touchstart", (ev) => {
+          let x = ev.touches[0].clientX;
+          let y = ev.touches[0].clientY;
+          last = [x, y];
+          console.log("开始点屏幕了");
+          isDrawing = true;
+        });
+        canvas.addEventListener("touchmove", (ev) => {
+          let x = ev.touches[0].clientX;
+          let y = ev.touches[0].clientY;
+          drawLine(last[0], last[1], x, y);
+          last = [x, y];
+        });
+      } else {
+        //  pc端
+        canvas.addEventListener("mousedown", (ev) => {
+          isDrawing = true;
+          last = [ev.clientX, ev.clientY];
+        });
+        canvas.addEventListener("mousemove", (ev) => {
+          // console.log(ev);
+
+          if (isDrawing) {
+            ctx.beginPath();
+
+            drawLine(last[0], last[1], ev.clientX, ev.clientY);
+            ctx.stroke();
+            ctx.fill();
+            last = [ev.clientX, ev.clientY];
+            // 左边 上  宽度 高度 这是画矩形的
+            // ctx.fillRect(ev.offsetX, ev.offsetY, 5, 5);
+          } else {
+            console.log("啥也没干");
+          }
+        });
+
+        canvas.addEventListener("mouseup", (ev) => {
+          console.log("停止操作");
+          isDrawing = false;
+        });
+      }
+      let clear = document.querySelector(".clear");
+
+      clear.addEventListener("click", function () {
+        console.log("1");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      });
+    </script>
+  </body>
+</html>
